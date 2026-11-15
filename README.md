@@ -114,11 +114,23 @@ Watch the tunnel:
 docker compose --profile vpn logs gluetun
 ```
 
-Stop everything, including the VPN containers:
+Stop everything, including the VPN containers, and keep your files:
 
 ```bash
 docker compose --profile vpn down
 ```
+
+## 7. Remove the stack
+
+This deletes the containers, the config, the media folders, and `.env`. The scripts in this folder stay.
+
+```bash
+./teardown.sh
+```
+
+Type `delete` when it asks. Nothing is removed until you do. `./teardown.sh --dry-run` prints the list and deletes nothing.
+
+Your movie files live in `media/` and are deleted with the rest. Copy them somewhere else first if you still want them.
 
 ## If this fails
 

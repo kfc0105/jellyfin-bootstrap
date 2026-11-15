@@ -80,6 +80,17 @@ For Sonarr and Radarr it loads `/api/v3/downloadclient/schema`, fills the qBitto
 
 Indexers are untouched. Seerr's wizard is also untouched: it asks for a Jellyfin API key that exists only after a person creates one in the Jellyfin dashboard.
 
+## Teardown
+
+`teardown.sh` removes the runtime state for this folder and leaves the scripts in place.
+
+1. It resolves `CONFIG_ROOT` and `MEDIA_ROOT` from `.env`, or `./config` and `./media` when `.env` is missing.
+2. It refuses those paths when they are the computer root, your home directory, this folder itself, or a system directory. It also refuses `/home/kmiyahara/media` and `/home/kmiyahara/media-stack`, which belong to a different stack on the machine this bootstrap was written on. A path outside this folder is refused unless you pass `--include-external`.
+3. After you type `delete` (or pass `--yes`), it runs `docker compose --profile vpn down -v --remove-orphans`. That stops the core services and the VPN profile, deletes the Compose network, and deletes anonymous volumes. Bind-mounted files are not inside a Docker volume, so the script then deletes `CONFIG_ROOT`, `MEDIA_ROOT`, and `.env` on the host.
+4. Docker images are left installed. Other Compose projects on the same computer can be using those same tags.
+
+`docker compose --profile vpn down` without this script is the stop button: containers go away, and config, media, and `.env` stay.
+
 ## Security
 
 This stack is a set of admin sites on your home network, plus a VPN for the downloader. Treat it that way.
